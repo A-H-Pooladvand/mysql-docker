@@ -20,8 +20,8 @@ services:
 
   phpmyadmin:
     restart: always
-#    profiles:
-#      - dev
+    profiles:
+      - dev
     container_name: ${PROJECT_NAME}-phpmyadmin
     depends_on:
       - mysql
