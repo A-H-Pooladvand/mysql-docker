@@ -1,12 +1,14 @@
 version: "3.8"
 
+volumes:
+  mysql:
+
 services:
   mysql:
-    restart: always
-    image: mysql:8.0.27
-    container_name: ${PROJECT_NAME}-mysql
+    restart: unless-stopped
+    image: mysql:8.0.36
+    container_name: mysql
     environment:
-      MYSQL_DATABASE: "${MYSQL_DATABASE}"
       MYSQL_USER: "${MYSQL_USER}"
       MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
       MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
@@ -16,15 +18,19 @@ services:
     ports:
       - "${MYSQL_PORT}:3306"
     volumes:
-      - ./mysql/db:/var/lib/mysql
+      - mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 3s
+      timeout: 10s
+      retries: 5
 
   phpmyadmin:
-    restart: always
-    profiles:
-      - dev
-    container_name: ${PROJECT_NAME}-phpmyadmin
+    restart: unless-stopped
+    container_name: phpmyadmin
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     image: phpmyadmin/phpmyadmin
     ports:
       - "${PHPMYADMIN_PORT}:80"
