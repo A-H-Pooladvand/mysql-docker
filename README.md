@@ -1,46 +1,37 @@
-# Laravel | Lumen Docker
+# Docker Compose for MySQL and phpMyAdmin
 
-The php [Laravel | Lumen] docker project
+This repository contains a Docker Compose file that sets up a MySQL server and a phpMyAdmin interface for database management.
 
-## Getting started
-- [Install requirements](#install-requirements)
-- [Quick start](#quick-start)
+## Services
 
-### Install requirements
-**Git**
+### MySQL
 
-```shell
-# Debian
-sudo apt install git
-```
-**Make**
+The MySQL server is based on the `mysql:8.0.36` image. The server is configured with a custom command to set the authentication plugin, character set, collation, and other parameters. The MySQL data is stored in a Docker volume named `mysql`.
 
-```shell
-# Debian
-sudo apt install make
-```
-**Docker & Docker Compose**
+### phpMyAdmin
 
-```shell
-# Install docker & compose
-# docker-compose included when installing via convenient script
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-# To run Docker without root privileges
-sudo groupadd docker # Create the docker group. 
-sudo usermod -aG docker $USER #Add your user to the docker group.
-sudo newgrp docker # Activate 
+The phpMyAdmin interface is based on the `phpmyadmin/phpmyadmin` image. It depends on the MySQL service and will only start once the MySQL service is healthy.
+
+## Environment Variables
+
+You need to set the following environment variables in your environment or in an `.env` file:
+
+- `MYSQL_USER`: The MySQL username.
+- `MYSQL_PASSWORD`: The password for the MySQL user.
+- `MYSQL_ROOT_PASSWORD`: The password for the MySQL root user.
+- `MYSQL_PORT`: The host port that maps to the MySQL server port 3306.
+- `PHPMYADMIN_PORT`: The host port that maps to the phpMyAdmin port 80.
+
+## Usage
+
+To start the services, run the following command in the same directory as the `docker-compose.yml` file:
+
+```bash
+docker-compose up -d
 ```
 
-### Quick Start
-- Check the `.env` file and set environment variables
-- Check `Makefile` and set `PROJECT_NAME`
-  - The `PROJECT_NAME` in `Makefile` must be identical with the `PROJECT_NAME` in the `.env` file
-- `clone` your krakend project into `./src/` directory
-- To install and start the container run `make build && make watch`
-
-**To list all available commands please run**  
-
-```shell
-make help
+To stop the services, run the following command:
+```bash
+docker-compose down
 ```
+Please replace the environment variable values with your actual values. Remember not to commit sensitive data like passwords to your version control system.
